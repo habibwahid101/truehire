@@ -1,0 +1,204 @@
+generator client {
+  provider = "prisma-client-js"
+}
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+enum CompanyStatus { ACTIVE INACTIVE }
+enum JobStatus { DRAFT PUBLISHED CLOSED }
+enum WorkplaceType { ONSITE REMOTE HYBRID }
+enum EmploymentType { FULL_TIME PART_TIME CONTRACT INTERNSHIP TEMPORARY }
+enum QuestionType { SHORT_TEXT LONG_TEXT YES_NO SINGLE_CHOICE NUMERIC }
+enum ApplicationStatus { NEW REVIEWING SHORTLISTED INTERVIEW_SCHEDULED INTERVIEWED SELECTED HOLD REJECTED NO_SHOW }
+enum InterviewMode { IN_PERSON PHONE GOOGLE_MEET ZOOM OTHER_ONLINE }
+enum InterviewStatus { SCHEDULED RESCHEDULED CANCELLED ATTENDED NO_SHOW }
+enum ActivityEventType { APPLICATION_SUBMITTED APPLICATION_OPENED STATUS_CHANGED EVALUATION_UPDATED INTERVIEW_SCHEDULED INTERVIEW_RESCHEDULED INTERVIEW_CANCELLED INTERVIEW_ATTENDED INTERVIEW_NO_SHOW NOTE_ADDED }
+
+model AdminUser {
+  id String @id @default(cuid())
+  email String @unique
+  name String
+  passwordHash String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  evaluations CandidateEvaluation[]
+  activities ApplicationActivity[]
+  interviews Interview[] @relation("InterviewCreator")
+}
+model Company {
+  id String @id @default(cuid())
+  name String
+  slug String @unique
+  logoKey String?
+  industry String?
+  website String?
+  location String?
+  overview String?
+  status CompanyStatus @default(ACTIVE)
+  internalNotes String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  jobs Job[]
+  @@index([status])
+}
+model Job {
+  id String @id @default(cuid())
+  companyId String
+  company Company @relation(fields: [companyId], references: [id], onDelete: Restrict)
+  slug String @unique
+  title String
+  summary String
+  description String
+  location String
+  workplaceType WorkplaceType
+  employmentType EmploymentType
+  vacancyCount Int @default(1)
+  salaryMin Int?
+  salaryMax Int?
+  salaryDisplay String?
+  salaryNegotiable Boolean @default(false)
+  educationRequirement String?
+  experienceRequirement String?
+  relevantExperience String?
+  skills String[]
+  responsibilities String
+  preferredQualifications String?
+  benefits String?
+  workingDays String?
+  workingHours String?
+  probation String?
+  joiningExpectation String?
+  applicationDeadline DateTime?
+  terms String?
+  instructions String?
+  requirePortfolio Boolean @default(false)
+  requireLinkedIn Boolean @default(false)
+  status JobStatus @default(DRAFT)
+  publishedAt DateTime?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  questions JobQuestion[]
+  applications Application[]
+  @@index([status, applicationDeadline])
+  @@index([companyId])
+}
+model JobQuestion {
+  id String @id @default(cuid())
+  jobId String
+  job Job @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  question String
+  type QuestionType
+  options String[]
+  required Boolean @default(true)
+  sortOrder Int @default(0)
+  answers ApplicationAnswer[]
+}
+model Application {
+  id String @id @default(cuid())
+  publicReference String @unique
+  jobId String
+  job Job @relation(fields: [jobId], references: [id], onDelete: Restrict)
+  candidateName String
+  phone String
+  phoneNormalized String
+  email String
+  emailNormalized String
+  currentLocation String
+  permanentAddress String?
+  highestEducation String
+  institution String?
+  subjectMajor String?
+  employmentStatus String
+  currentCompany String?
+  currentDesignation String?
+  totalExperienceYrs Decimal @db.Decimal(4, 1)
+  relevantExperience String?
+  skills String
+  currentSalary Int?
+  expectedSalary Int?
+  noticePeriod String?
+  earliestJoinDate DateTime?
+  suitability String
+  linkedinUrl String?
+  portfolioUrl String?
+  cvKey String
+  cvFileName String
+  cvMimeType String
+  supportingKey String?
+  supportingFileName String?
+  termsAccepted Boolean
+  accuracyConfirmed Boolean
+  consentAccepted Boolean
+  status ApplicationStatus @default(NEW)
+  submittedAt DateTime @default(now())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  answers ApplicationAnswer[]
+  evaluation CandidateEvaluation?
+  interviews Interview[]
+  activities ApplicationActivity[]
+  @@index([jobId, status])
+  @@index([emailNormalized, jobId])
+  @@index([phoneNormalized, jobId])
+  @@index([status, submittedAt])
+}
+model ApplicationAnswer {
+  id String @id @default(cuid())
+  applicationId String
+  application Application @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+  questionId String
+  question JobQuestion @relation(fields: [questionId], references: [id], onDelete: Restrict)
+  value String
+}
+model CandidateEvaluation {
+  id String @id @default(cuid())
+  applicationId String @unique
+  application Application @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+  rating Int?
+  strengths String?
+  concerns String?
+  internalNote String?
+  recommendedAction String?
+  createdById String?
+  createdBy AdminUser? @relation(fields: [createdById], references: [id], onDelete: SetNull)
+  updatedById String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+model Interview {
+  id String @id @default(cuid())
+  applicationId String
+  application Application @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+  scheduledAt DateTime
+  timezone String @default("Asia/Dhaka")
+  mode InterviewMode
+  location String?
+  meetingUrl String?
+  interviewer String?
+  candidateInstruction String?
+  internalNote String?
+  status InterviewStatus @default(SCHEDULED)
+  cancellationReason String?
+  createdById String?
+  createdBy AdminUser? @relation("InterviewCreator", fields: [createdById], references: [id], onDelete: SetNull)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  @@index([scheduledAt, status])
+}
+model ApplicationActivity {
+  id String @id @default(cuid())
+  applicationId String
+  application Application @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+  actorId String?
+  actor AdminUser? @relation(fields: [actorId], references: [id], onDelete: SetNull)
+  eventType ActivityEventType
+  summary String
+  metadata Json?
+  createdAt DateTime @default(now())
+  @@index([applicationId, createdAt])
+}
+model ApplicationCounter {
+  year Int @id
+  last Int
+}
