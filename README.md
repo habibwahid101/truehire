@@ -8,9 +8,9 @@ TrueHire presents complete job information, collects structured applications, an
 
 - Next.js 15 App Router + TypeScript
 - PostgreSQL + Prisma
-- Signed httpOnly admin sessions (jose + bcrypt)
+- Signed httpOnly admin sessions (`jose` + `bcryptjs`)
 - Private local or S3-compatible CV storage
-- Resend transactional email (console fallback in development)
+- Resend transactional email (console fallback when `RESEND_API_KEY` is empty)
 - Zod validation + Tailwind CSS v4
 
 ## Local setup
@@ -20,6 +20,7 @@ cp .env.example .env
 # set DATABASE_URL, AUTH_SECRET, and bootstrap admin credentials
 npm install
 npx prisma migrate dev --name init
+# or: npx prisma db push
 npm run db:seed
 npm run dev
 ```
@@ -28,3 +29,9 @@ npm run dev
 - Admin: http://localhost:3000/admin/login
 
 Never commit `.env` or uploaded CVs.
+
+## Routes
+
+Public: `/`, `/jobs`, `/jobs/[slug]`, `/jobs/[slug]/apply`, `/application/success/[reference]`, `/privacy`, `/terms`, `/contact`
+
+Admin: `/admin/login`, `/admin`, `/admin/companies`, `/admin/jobs`, `/admin/applications`, `/admin/interviews`

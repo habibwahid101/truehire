@@ -1,0 +1,111 @@
+import { z } from "zod";
+import { EMPLOYMENT_TYPES, INTERVIEW_MODES, QUESTION_TYPES, WORKPLACE_TYPES } from "./constants";
+
+export const loginSchema = z.object({
+  email: z.string().trim().email("Enter a valid email address."),
+  password: z.string().min(8, "Enter your password."),
+});
+
+export const companySchema = z.object({
+  name: z.string().trim().min(2).max(120),
+  slug: z.string().trim().max(80).optional().or(z.literal("")),
+  industry: z.string().trim().max(80).optional().or(z.literal("")),
+  website: z.string().trim().url().optional().or(z.literal("")),
+  location: z.string().trim().max(120).optional().or(z.literal("")),
+  overview: z.string().trim().max(4000).optional().or(z.literal("")),
+  internalNotes: z.string().trim().max(4000).optional().or(z.literal("")),
+  status: z.enum(["ACTIVE", "INACTIVE"]).default("ACTIVE"),
+});
+
+export const jobSchema = z.object({
+  companyId: z.string().min(1),
+  title: z.string().trim().min(3).max(160),
+  slug: z.string().trim().max(80).optional().or(z.literal("")),
+  summary: z.string().trim().min(20).max(400),
+  description: z.string().trim().min(40).max(20000),
+  location: z.string().trim().min(2).max(160),
+  workplaceType: z.enum(WORKPLACE_TYPES),
+  employmentType: z.enum(EMPLOYMENT_TYPES),
+  vacancyCount: z.coerce.number().int().min(1).max(99).default(1),
+  salaryMin: z.union([z.coerce.number().int().nonnegative(), z.nan()]).optional().transform((v) => (typeof v === "number" && !Number.isNaN(v) ? v : undefined)),
+  salaryMax: z.union([z.coerce.number().int().nonnegative(), z.nan()]).optional().transform((v) => (typeof v === "number" && !Number.isNaN(v) ? v : undefined)),
+  salaryDisplay: z.string().trim().max(80).optional().or(z.literal("")),
+  salaryNegotiable: z.boolean().default(false),
+  educationRequirement: z.string().trim().max(240).optional().or(z.literal("")),
+  experienceRequirement: z.string().trim().max(240).optional().or(z.literal("")),
+  relevantExperience: z.string().trim().max(240).optional().or(z.literal("")),
+  skills: z.array(z.string().trim().min(1)).default([]),
+  responsibilities: z.string().trim().min(20).max(20000),
+  preferredQualifications: z.string().trim().max(8000).optional().or(z.literal("")),
+  benefits: z.string().trim().max(8000).optional().or(z.literal("")),
+  workingDays: z.string().trim().max(120).optional().or(z.literal("")),
+  workingHours: z.string().trim().max(120).optional().or(z.literal("")),
+  probation: z.string().trim().max(240).optional().or(z.literal("")),
+  joiningExpectation: z.string().trim().max(240).optional().or(z.literal("")),
+  applicationDeadline: z.string().optional().or(z.literal("")),
+  terms: z.string().trim().max(20000).optional().or(z.literal("")),
+  instructions: z.string().trim().max(4000).optional().or(z.literal("")),
+  requirePortfolio: z.boolean().default(false),
+  requireLinkedIn: z.boolean().default(false),
+  questions: z.array(z.object({
+    id: z.string().optional(),
+    question: z.string().trim().min(3).max(400),
+    type: z.enum(QUESTION_TYPES),
+    options: z.array(z.string()).optional(),
+    required: z.boolean().default(true),
+  })).default([]),
+});
+
+export const applicationSubmitSchema = z.object({
+  jobId: z.string().min(1),
+  candidateName: z.string().trim().min(2).max(120),
+  phone: z.string().trim().min(8).max(24),
+  email: z.string().trim().email().max(160),
+  currentLocation: z.string().trim().min(2).max(200),
+  permanentAddress: z.string().trim().max(300).optional().or(z.literal("")),
+  highestEducation: z.string().trim().min(2).max(120),
+  institution: z.string().trim().max(160).optional().or(z.literal("")),
+  subjectMajor: z.string().trim().max(160).optional().or(z.literal("")),
+  employmentStatus: z.string().trim().min(2).max(80),
+  currentCompany: z.string().trim().max(160).optional().or(z.literal("")),
+  currentDesignation: z.string().trim().max(160).optional().or(z.literal("")),
+  totalExperienceYrs: z.coerce.number().min(0).max(50),
+  relevantExperience: z.string().trim().max(400).optional().or(z.literal("")),
+  skills: z.string().trim().min(2).max(500),
+  currentSalary: z.union([z.coerce.number().int().nonnegative(), z.nan()]).optional().transform((v) => (typeof v === "number" && !Number.isNaN(v) ? v : undefined)),
+  expectedSalary: z.union([z.coerce.number().int().nonnegative(), z.nan()]).optional().transform((v) => (typeof v === "number" && !Number.isNaN(v) ? v : undefined)),
+  noticePeriod: z.string().trim().max(80).optional().or(z.literal("")),
+  earliestJoinDate: z.string().optional().or(z.literal("")),
+  suitability: z.string().trim().min(30).max(2000),
+  answers: z.record(z.string(), z.string()).default({}),
+  linkedinUrl: z.string().trim().url().optional().or(z.literal("")),
+  portfolioUrl: z.string().trim().url().optional().or(z.literal("")),
+  cvKey: z.string().min(1),
+  cvFileName: z.string().min(1),
+  cvMimeType: z.string().min(1),
+  supportingKey: z.string().optional().or(z.literal("")),
+  supportingFileName: z.string().optional().or(z.literal("")),
+  termsAccepted: z.literal(true),
+  accuracyConfirmed: z.literal(true),
+  consentAccepted: z.literal(true),
+});
+
+export const evaluationSchema = z.object({
+  rating: z.union([z.coerce.number().int().min(1).max(5), z.nan()]).optional().transform((v) => (typeof v === "number" && !Number.isNaN(v) ? v : undefined)),
+  strengths: z.string().trim().max(2000).optional().or(z.literal("")),
+  concerns: z.string().trim().max(2000).optional().or(z.literal("")),
+  internalNote: z.string().trim().max(4000).optional().or(z.literal("")),
+  recommendedAction: z.string().trim().max(240).optional().or(z.literal("")),
+});
+
+export const interviewSchema = z.object({
+  date: z.string().min(1),
+  time: z.string().min(1),
+  timezone: z.string().default("Asia/Dhaka"),
+  mode: z.enum(INTERVIEW_MODES),
+  location: z.string().trim().max(240).optional().or(z.literal("")),
+  meetingUrl: z.string().trim().url().optional().or(z.literal("")),
+  interviewer: z.string().trim().max(160).optional().or(z.literal("")),
+  candidateInstruction: z.string().trim().max(2000).optional().or(z.literal("")),
+  internalNote: z.string().trim().max(2000).optional().or(z.literal("")),
+});

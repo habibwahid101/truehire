@@ -1,0 +1,49 @@
+@import "tailwindcss";
+
+@theme inline {
+  --font-sans: var(--font-geist);
+  --font-serif: var(--font-source);
+  --color-paper: #f6f3ee;
+  --color-surface: #fffcf8;
+  --color-ink: #1a1916;
+  --color-muted: #6f6a62;
+  --color-faint: #9b958c;
+  --color-line: #e4dfd6;
+  --color-brand: #0e3b36;
+  --color-brand-hover: #0a2e2a;
+  --color-brand-soft: #e4eeec;
+  --color-success: #1f6b4a;
+  --color-success-soft: #e5f3eb;
+  --color-warning: #8a5a10;
+  --color-warning-soft: #f8efd8;
+  --color-danger: #b42318;
+  --color-danger-soft: #f8e6e4;
+  --color-info: #1d4b73;
+  --color-info-soft: #e4eef6;
+}
+
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  * { animation: none !important; transition: none !important; }
+}
+body {
+  min-height: 100vh;
+  background: var(--color-paper);
+  color: var(--color-ink);
+  font-family: var(--font-geist), ui-sans-serif, system-ui, sans-serif;
+  font-size: 16px;
+  line-height: 1.6;
+}
+h1, h2, h3, .serif {
+  font-family: var(--font-source), Georgia, "Times New Roman", serif;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+  font-weight: 560;
+}
+:focus-visible { outline: 2px solid var(--color-brand); outline-offset: 3px; }
+.container-page { width: min(1120px, calc(100% - 32px)); margin-inline: auto; }
+.container-narrow { width: min(760px, calc(100% - 32px)); margin-inline: auto; }
+.prose-job p { margin: 0 0 0.9em; }
+input, select, textarea, button { font: inherit; }
