@@ -7,6 +7,12 @@ export async function middleware(request: NextRequest) {
   const isAdminPage = pathname.startsWith("/admin") && pathname !== "/admin/login";
   const isAdminApi = pathname.startsWith("/api/admin");
   if (!isAdminPage && !isAdminApi) return NextResponse.next();
+
+  if (process.env.TRUEHIRE_DATA_SOURCE !== "live") {
+    if (isAdminApi) return NextResponse.json({ error: "Review build — document download requires live auth." }, { status: 401 });
+    return NextResponse.next();
+  }
+
   const token = request.cookies.get(SESSION_COOKIE)?.value;
   const secret = process.env.AUTH_SECRET;
   if (!token || !secret) return deny(request, isAdminApi);
