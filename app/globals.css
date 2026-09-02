@@ -3,23 +3,23 @@
 @theme inline {
   --font-sans: var(--font-geist);
   --font-serif: var(--font-source);
-  --color-paper: #f6f3ee;
-  --color-surface: #fffcf8;
-  --color-ink: #1a1916;
-  --color-muted: #6f6a62;
-  --color-faint: #9b958c;
-  --color-line: #e4dfd6;
-  --color-brand: #0e3b36;
-  --color-brand-hover: #0a2e2a;
-  --color-brand-soft: #e4eeec;
-  --color-success: #1f6b4a;
-  --color-success-soft: #e5f3eb;
-  --color-warning: #8a5a10;
-  --color-warning-soft: #f8efd8;
-  --color-danger: #b42318;
-  --color-danger-soft: #f8e6e4;
-  --color-info: #1d4b73;
-  --color-info-soft: #e4eef6;
+  --color-paper: #f3efe8;
+  --color-surface: #fffcf7;
+  --color-ink: #161513;
+  --color-muted: #6a655d;
+  --color-faint: #948e84;
+  --color-line: #ddd6cb;
+  --color-brand: #123c37;
+  --color-brand-hover: #0c2d29;
+  --color-brand-soft: #e6eeec;
+  --color-success: #1c6848;
+  --color-success-soft: #e4f3eb;
+  --color-warning: #7d5412;
+  --color-warning-soft: #f6ecd6;
+  --color-danger: #a61f18;
+  --color-danger-soft: #f6e5e3;
+  --color-info: #1b4a70;
+  --color-info-soft: #e5eef5;
 }
 
 * { box-sizing: border-box; }
@@ -34,16 +34,36 @@ body {
   color: var(--color-ink);
   font-family: var(--font-geist), ui-sans-serif, system-ui, sans-serif;
   font-size: 16px;
-  line-height: 1.6;
+  line-height: 1.65;
+  text-rendering: optimizeLegibility;
 }
 h1, h2, h3, .serif {
   font-family: var(--font-source), Georgia, "Times New Roman", serif;
-  letter-spacing: -0.02em;
-  line-height: 1.2;
+  letter-spacing: -0.025em;
+  line-height: 1.15;
   font-weight: 560;
+  color: var(--color-ink);
 }
 :focus-visible { outline: 2px solid var(--color-brand); outline-offset: 3px; }
-.container-page { width: min(1120px, calc(100% - 32px)); margin-inline: auto; }
-.container-narrow { width: min(760px, calc(100% - 32px)); margin-inline: auto; }
-.prose-job p { margin: 0 0 0.9em; }
+.container-page { width: min(1120px, calc(100% - 28px)); margin-inline: auto; }
+.container-narrow { width: min(720px, calc(100% - 28px)); margin-inline: auto; }
+.prose-job p { margin: 0 0 0.95em; }
 input, select, textarea, button { font: inherit; }
+::placeholder { color: var(--color-faint); }
+
+.panel { background: var(--color-surface); border: 1px solid var(--color-line); }
+.kicker {
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--color-brand);
+  font-weight: 600;
+}
+
+.table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+.table-wrap table { min-width: 640px; }
+
+@media (max-width: 379px) {
+  body { font-size: 15.5px; }
+  .container-page, .container-narrow { width: min(1120px, calc(100% - 20px)); }
+}
