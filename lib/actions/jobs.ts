@@ -90,7 +90,7 @@ function jobFields(parsed: ReturnType<typeof jobSchema.parse>, slug: string): Pr
 export async function createJobAction(formData: FormData) {
   await requireAdminSession();
   const parsed = readJobForm(formData);
-  if (!parsed.success) return { error: parsed.error.issues[0]?.message || "Please check the job details." };
+  if (!parsed.success) return;
   const existing = await prisma.job.findMany({ select: { slug: true } });
   const slug = uniqueSlug(parsed.data.slug || parsed.data.title, existing.map((j) => j.slug));
   const job = await prisma.job.create({
@@ -114,7 +114,7 @@ export async function createJobAction(formData: FormData) {
 export async function updateJobAction(id: string, formData: FormData) {
   await requireAdminSession();
   const parsed = readJobForm(formData);
-  if (!parsed.success) return { error: parsed.error.issues[0]?.message || "Please check the job details." };
+  if (!parsed.success) return;
   const others = await prisma.job.findMany({ where: { id: { not: id } }, select: { slug: true } });
   const slug = uniqueSlug(parsed.data.slug || parsed.data.title, others.map((j) => j.slug));
   await prisma.$transaction(async (tx) => {
@@ -146,13 +146,12 @@ export async function updateJobAction(id: string, formData: FormData) {
   revalidatePath(`/admin/jobs/${id}`);
   revalidatePath("/jobs");
   revalidatePath("/");
-  return { ok: true };
 }
 
 export async function setJobStatusAction(id: string, status: JobStatus) {
   await requireAdminSession();
   const job = await prisma.job.findUnique({ where: { id } });
-  if (!job) return { error: "Job not found." };
+  if (!job) return;
   await prisma.job.update({
     where: { id },
     data: { status, publishedAt: status === "PUBLISHED" ? job.publishedAt ?? new Date() : job.publishedAt },
@@ -161,13 +160,12 @@ export async function setJobStatusAction(id: string, status: JobStatus) {
   revalidatePath(`/admin/jobs/${id}`);
   revalidatePath("/jobs");
   revalidatePath("/");
-  return { ok: true };
 }
 
 export async function duplicateJobAction(id: string) {
   await requireAdminSession();
   const job = await prisma.job.findUnique({ where: { id }, include: { questions: true } });
-  if (!job) return { error: "Job not found." };
+  if (!job) return;
   const existing = await prisma.job.findMany({ select: { slug: true } });
   const copy = await prisma.job.create({
     data: {
