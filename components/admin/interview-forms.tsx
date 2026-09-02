@@ -1,4 +1,3 @@
-import type { Interview } from "@prisma/client";
 import { scheduleInterviewAction, updateInterviewAction } from "@/lib/actions/recruitment";
 import { Field, Input, Select, Textarea } from "@/components/ui/field";
 import { Button } from "@/components/ui/button";
@@ -26,7 +25,15 @@ export function ScheduleInterviewForm({ applicationId }: { applicationId: string
   );
 }
 
-export function InterviewManageForm({ interview }: { interview: Interview }) {
+export type InterviewFormValues = {
+  id: string;
+  scheduledAt: Date | string;
+  location?: string | null;
+  meetingUrl?: string | null;
+  candidateInstruction?: string | null;
+};
+
+export function InterviewManageForm({ interview }: { interview: InterviewFormValues }) {
   const date = new Date(interview.scheduledAt).toISOString().slice(0, 10);
   const time = new Date(interview.scheduledAt).toTimeString().slice(0, 5);
   async function reschedule(formData: FormData) { "use server"; await updateInterviewAction(interview.id, "reschedule", formData); }
