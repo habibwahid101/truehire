@@ -16,7 +16,7 @@ export function JobForm({
 }: {
   job?: Job & { questions: JobQuestion[] };
   companies: Company[];
-  action: (formData: FormData) => Promise<{ error?: string } | void>;
+  action: (formData: FormData) => void | Promise<void>;
 }) {
   const [error, setError] = useState("");
   const [questions, setQuestions] = useState<QuestionDraft[]>(
@@ -27,8 +27,8 @@ export function JobForm({
       id: q.id, question: q.question, type: q.type,
       options: q.options.split(",").map((s) => s.trim()).filter(Boolean), required: q.required,
     }))));
-    const result = await action(formData);
-    if (result && "error" in result && result.error) setError(result.error);
+    setError("");
+    await action(formData);
   }
   const deadline = job?.applicationDeadline ? new Date(job.applicationDeadline).toISOString().slice(0, 10) : "";
   return (
