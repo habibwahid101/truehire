@@ -1,21 +1,55 @@
 "use client";
 
 import { useState } from "react";
-import type { Company, Job, JobQuestion } from "@prisma/client";
 import { Field, Input, Select, Textarea } from "@/components/ui/field";
 import { Button } from "@/components/ui/button";
 import {
   EMPLOYMENT_LABELS, EMPLOYMENT_TYPES, QUESTION_TYPE_LABELS, QUESTION_TYPES,
   WORKPLACE_LABELS, WORKPLACE_TYPES,
+  type EmploymentTypeValue, type QuestionTypeValue, type WorkplaceTypeValue,
 } from "@/lib/constants";
 
-type QuestionDraft = { id?: string; question: string; type: (typeof QUESTION_TYPES)[number]; options: string; required: boolean };
+type QuestionDraft = { id?: string; question: string; type: QuestionTypeValue; options: string; required: boolean };
+
+export type JobFormCompany = { id: string; name: string };
+export type JobFormValues = {
+  companyId: string;
+  slug: string;
+  title: string;
+  summary: string;
+  description: string;
+  location: string;
+  workplaceType: WorkplaceTypeValue;
+  employmentType: EmploymentTypeValue;
+  vacancyCount: number;
+  salaryMin?: number | null;
+  salaryMax?: number | null;
+  salaryDisplay?: string | null;
+  salaryNegotiable?: boolean;
+  educationRequirement?: string | null;
+  experienceRequirement?: string | null;
+  relevantExperience?: string | null;
+  skills: string[];
+  responsibilities: string;
+  preferredQualifications?: string | null;
+  benefits?: string | null;
+  workingDays?: string | null;
+  workingHours?: string | null;
+  probation?: string | null;
+  joiningExpectation?: string | null;
+  applicationDeadline?: Date | string | null;
+  instructions?: string | null;
+  terms?: string | null;
+  requireLinkedIn?: boolean;
+  requirePortfolio?: boolean;
+  questions: Array<{ id: string; question: string; type: QuestionTypeValue; options: string[]; required: boolean }>;
+};
 
 export function JobForm({
   job, companies, action,
 }: {
-  job?: Job & { questions: JobQuestion[] };
-  companies: Company[];
+  job?: JobFormValues;
+  companies: JobFormCompany[];
   action: (formData: FormData) => void | Promise<void>;
 }) {
   const [error, setError] = useState("");
