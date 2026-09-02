@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 
 export function CompanyForm({
   company, action,
-}: { company?: Company; action: (formData: FormData) => Promise<{ error?: string } | void> }) {
+}: { company?: Company; action: (formData: FormData) => void | Promise<void> }) {
   return (
     <form action={action} className="grid max-w-2xl gap-4">
       <Field label="Company name"><Input name="name" defaultValue={company?.name} required /></Field>

@@ -10,7 +10,7 @@ import { companySchema } from "@/lib/validation";
 export async function createCompanyAction(formData: FormData) {
   await requireAdminSession();
   const parsed = companySchema.safeParse(Object.fromEntries(formData.entries()));
-  if (!parsed.success) return { error: parsed.error.issues[0]?.message || "Please check the company details." };
+  if (!parsed.success) return;
   const existing = await prisma.company.findMany({ select: { slug: true } });
   const company = await prisma.company.create({
     data: {
@@ -31,7 +31,7 @@ export async function createCompanyAction(formData: FormData) {
 export async function updateCompanyAction(id: string, formData: FormData) {
   await requireAdminSession();
   const parsed = companySchema.safeParse(Object.fromEntries(formData.entries()));
-  if (!parsed.success) return { error: parsed.error.issues[0]?.message || "Please check the company details." };
+  if (!parsed.success) return;
   const others = await prisma.company.findMany({ where: { id: { not: id } }, select: { slug: true } });
   await prisma.company.update({
     where: { id },
@@ -48,5 +48,4 @@ export async function updateCompanyAction(id: string, formData: FormData) {
   });
   revalidatePath("/admin/companies");
   revalidatePath(`/admin/companies/${id}`);
-  return { ok: true };
 }
