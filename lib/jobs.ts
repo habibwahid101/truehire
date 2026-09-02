@@ -1,7 +1,12 @@
+import { EMPLOYMENT_TYPES, type EmploymentTypeValue } from "./constants";
 import { prisma } from "./db";
 import { fixtureJobs, jobsWithCompany } from "./fixtures";
 import { liveOrFixture } from "./review";
 import { isJobOpen } from "./utils";
+
+function asEmploymentType(value?: string): EmploymentTypeValue | undefined {
+  return EMPLOYMENT_TYPES.includes(value as EmploymentTypeValue) ? (value as EmploymentTypeValue) : undefined;
+}
 
 function matchFilters(
   jobs: ReturnType<typeof jobsWithCompany>,
@@ -21,7 +26,9 @@ export async function listPublishedJobs(filters?: { q?: string; location?: strin
     const jobs = await prisma.job.findMany({
       where: {
         status: "PUBLISHED",
-        ...(filters?.employmentType ? { employmentType: filters.employmentType as never } : {}),
+        ...(asEmploymentType(filters?.employmentType)
+          ? { employmentType: asEmploymentType(filters.employmentType) }
+          : {}),
         ...(filters?.location ? { location: { contains: filters.location, mode: "insensitive" } } : {}),
         ...(filters?.q
           ? {
