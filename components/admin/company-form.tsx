@@ -1,10 +1,21 @@
-import type { Company } from "@prisma/client";
 import { Field, Input, Select, Textarea } from "@/components/ui/field";
 import { Button } from "@/components/ui/button";
+import type { CompanyStatusValue } from "@/lib/constants";
+
+export type CompanyFormValues = {
+  name: string;
+  slug: string;
+  industry?: string | null;
+  website?: string | null;
+  location?: string | null;
+  overview?: string | null;
+  internalNotes?: string | null;
+  status?: CompanyStatusValue;
+};
 
 export function CompanyForm({
   company, action,
-}: { company?: Company; action: (formData: FormData) => void | Promise<void> }) {
+}: { company?: CompanyFormValues; action: (formData: FormData) => void | Promise<void> }) {
   return (
     <form action={action} className="grid max-w-2xl gap-4">
       <Field label="Company name"><Input name="name" defaultValue={company?.name} required /></Field>

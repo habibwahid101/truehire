@@ -1,9 +1,16 @@
-import type { CandidateEvaluation } from "@prisma/client";
 import { saveEvaluationAction } from "@/lib/actions/recruitment";
 import { Field, Input, Textarea } from "@/components/ui/field";
 import { Button } from "@/components/ui/button";
 
-export function EvaluationForm({ applicationId, evaluation }: { applicationId: string; evaluation: CandidateEvaluation | null }) {
+export type EvaluationFormValues = {
+  rating?: number | null;
+  strengths?: string | null;
+  concerns?: string | null;
+  internalNote?: string | null;
+  recommendedAction?: string | null;
+};
+
+export function EvaluationForm({ applicationId, evaluation }: { applicationId: string; evaluation: EvaluationFormValues | null }) {
   return (
     <form action={saveEvaluationAction.bind(null, applicationId)} className="grid gap-3">
       <Field label="Rating (1–5)"><Input name="rating" type="number" min="1" max="5" defaultValue={evaluation?.rating ?? ""} /></Field>

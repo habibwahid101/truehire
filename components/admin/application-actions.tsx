@@ -1,12 +1,13 @@
-import type { ApplicationStatus } from "@prisma/client";
 import { updateApplicationStatusAction } from "@/lib/actions/recruitment";
-import { APPLICATION_STATUS_LABELS, APPLICATION_STATUSES } from "@/lib/constants";
+import { APPLICATION_STATUS_LABELS, APPLICATION_STATUSES, type ApplicationStatusValue } from "@/lib/constants";
 import { Button } from "@/components/ui/button";
 
-export function ApplicationStatusForm({ applicationId, status }: { applicationId: string; status: ApplicationStatus }) {
+export function ApplicationStatusForm({ applicationId, status }: { applicationId: string; status: ApplicationStatusValue }) {
   async function action(formData: FormData) {
     "use server";
-    await updateApplicationStatusAction(applicationId, String(formData.get("status")) as ApplicationStatus);
+    const next = String(formData.get("status"));
+    if (!APPLICATION_STATUSES.includes(next as ApplicationStatusValue)) return;
+    await updateApplicationStatusAction(applicationId, next as ApplicationStatusValue);
   }
   return (
     <form action={action} className="flex flex-wrap items-end gap-2">

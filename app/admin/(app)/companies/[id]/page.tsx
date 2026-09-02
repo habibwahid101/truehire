@@ -11,7 +11,7 @@ export default async function CompanyDetailPage({ params }: { params: Promise<{ 
       <p className="kicker">Company</p>
       <h1 className="serif mt-2 text-3xl">{company.name}</h1>
       <p className="mt-1 text-sm text-muted">Internal company record. Status is administrative, not a legal verification mark.</p>
-      <div className="mt-6"><CompanyForm company={company as never} action={updateCompanyAction.bind(null, company.id)} /></div>
+      <div className="mt-6"><CompanyForm company={company} action={updateCompanyAction.bind(null, company.id)} /></div>
     </div>
   );
 }

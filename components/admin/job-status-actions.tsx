@@ -1,8 +1,8 @@
-import type { JobStatus } from "@prisma/client";
 import { duplicateJobAction, setJobStatusAction } from "@/lib/actions/jobs";
 import { Button } from "@/components/ui/button";
+import type { JobStatusValue } from "@/lib/constants";
 
-export function JobStatusActions({ id, status, slug }: { id: string; status: JobStatus; slug: string }) {
+export function JobStatusActions({ id, status, slug }: { id: string; status: JobStatusValue; slug: string }) {
   async function publish() { "use server"; await setJobStatusAction(id, "PUBLISHED"); }
   async function unpublish() { "use server"; await setJobStatusAction(id, "DRAFT"); }
   async function close() { "use server"; await setJobStatusAction(id, "CLOSED"); }

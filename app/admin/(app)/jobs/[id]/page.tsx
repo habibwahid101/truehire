@@ -19,7 +19,7 @@ export default async function EditJobPage({ params }: { params: Promise<{ id: st
         </div>
         <JobStatusActions id={job.id} status={job.status} slug={job.slug} />
       </div>
-      <div className="mt-6"><JobForm job={job as never} companies={companies as never} action={updateJobAction.bind(null, job.id)} /></div>
+      <div className="mt-6"><JobForm job={job} companies={companies} action={updateJobAction.bind(null, job.id)} /></div>
     </div>
   );
 }
