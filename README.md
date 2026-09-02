@@ -35,3 +35,7 @@ Never commit `.env` or uploaded CVs.
 Public: `/`, `/jobs`, `/jobs/[slug]`, `/jobs/[slug]/apply`, `/application/success/[reference]`, `/privacy`, `/terms`, `/contact`
 
 Admin: `/admin/login`, `/admin`, `/admin/companies`, `/admin/jobs`, `/admin/applications`, `/admin/interviews`
+
+## Deployment checkpoint
+
+Frontend review build on `main`, including form-action typing fixes for Vercel.
