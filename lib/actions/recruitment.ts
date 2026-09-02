@@ -16,8 +16,8 @@ function touch(paths: string[]) {
 export async function updateApplicationStatusAction(applicationId: string, status: ApplicationStatus) {
   const session = await requireAdminSession();
   const application = await prisma.application.findUnique({ where: { id: applicationId } });
-  if (!application) return { error: "Application not found." };
-  if (application.status === status) return { ok: true };
+  if (!application) return;
+  if (application.status === status) return;
   await prisma.$transaction(async (tx) => {
     await tx.application.update({ where: { id: applicationId }, data: { status } });
     await recordActivity(tx, {
@@ -29,7 +29,6 @@ export async function updateApplicationStatusAction(applicationId: string, statu
     });
   });
   touch(["/admin", "/admin/applications", `/admin/applications/${applicationId}`, "/admin/interviews"]);
-  return { ok: true };
 }
 
 export async function saveEvaluationAction(applicationId: string, formData: FormData) {
@@ -41,7 +40,7 @@ export async function saveEvaluationAction(applicationId: string, formData: Form
     internalNote: formData.get("internalNote"),
     recommendedAction: formData.get("recommendedAction"),
   });
-  if (!parsed.success) return { error: parsed.error.issues[0]?.message || "Could not save evaluation." };
+  if (!parsed.success) return;
   await prisma.candidateEvaluation.upsert({
     where: { applicationId },
     create: {
@@ -70,7 +69,6 @@ export async function saveEvaluationAction(applicationId: string, formData: Form
     summary: "Internal evaluation updated",
   });
   touch([`/admin/applications/${applicationId}`]);
-  return { ok: true };
 }
 
 export async function scheduleInterviewAction(applicationId: string, formData: FormData) {
@@ -86,14 +84,14 @@ export async function scheduleInterviewAction(applicationId: string, formData: F
     candidateInstruction: formData.get("candidateInstruction"),
     internalNote: formData.get("internalNote"),
   });
-  if (!parsed.success) return { error: parsed.error.issues[0]?.message || "Check the interview details." };
+  if (!parsed.success) return;
   const scheduledAt = new Date(`${parsed.data.date}T${parsed.data.time}:00+06:00`);
-  if (Number.isNaN(scheduledAt.getTime())) return { error: "The interview date or time is not valid." };
+  if (Number.isNaN(scheduledAt.getTime())) return;
   const application = await prisma.application.findUnique({
     where: { id: applicationId },
     include: { job: { include: { company: true } } },
   });
-  if (!application) return { error: "Application not found." };
+  if (!application) return;
   const interview = await prisma.$transaction(async (tx) => {
     const created = await tx.interview.create({
       data: {
@@ -134,7 +132,6 @@ export async function scheduleInterviewAction(applicationId: string, formData: F
     reference: application.publicReference,
   });
   touch(["/admin", "/admin/interviews", `/admin/applications/${applicationId}`]);
-  return { ok: true };
 }
 
 export async function updateInterviewAction(
@@ -147,7 +144,7 @@ export async function updateInterviewAction(
     where: { id: interviewId },
     include: { application: { include: { job: { include: { company: true } } } } },
   });
-  if (!interview) return { error: "Interview not found." };
+  if (!interview) return;
 
   let nextInterviewStatus: InterviewStatus = interview.status;
   let nextAppStatus: ApplicationStatus | null = null;
@@ -158,7 +155,7 @@ export async function updateInterviewAction(
 
   if (action === "reschedule") {
     scheduledAt = new Date(`${String(formData?.get("date") || "")}T${String(formData?.get("time") || "")}:00+06:00`);
-    if (Number.isNaN(scheduledAt.getTime())) return { error: "The new date or time is not valid." };
+    if (Number.isNaN(scheduledAt.getTime())) return;
     nextInterviewStatus = "RESCHEDULED";
     nextAppStatus = "INTERVIEW_SCHEDULED";
     eventType = "INTERVIEW_RESCHEDULED";
@@ -224,7 +221,6 @@ export async function updateInterviewAction(
   }
 
   touch(["/admin", "/admin/interviews", `/admin/applications/${interview.applicationId}`]);
-  return { ok: true };
 }
 
 export async function markApplicationOpenedAction(applicationId: string) {
