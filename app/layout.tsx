@@ -15,11 +15,6 @@ export const metadata: Metadata = {
   },
   description: "TrueHire presents credible roles with complete information and a structured application process.",
   robots: { index: true, follow: true },
-  openGraph: {
-    title: "TrueHire",
-    description: "Clear opportunities and structured recruitment.",
-    type: "website",
-  },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

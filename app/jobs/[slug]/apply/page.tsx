@@ -16,7 +16,8 @@ export default async function ApplyPage({ params }: { params: Promise<{ slug: st
       <SiteHeader compact />
       <main className="container-narrow py-10 sm:py-14">
         <Link href={`/jobs/${job.slug}`} className="text-sm text-muted hover:text-ink">← {job.title}</Link>
-        <h1 className="serif mt-4 text-3xl sm:text-4xl">Apply</h1>
+        <p className="kicker mt-6">Application</p>
+        <h1 className="serif mt-2 text-3xl sm:text-4xl">Apply</h1>
         <p className="mt-2 text-muted">{job.title} · {job.company.name}</p>
         {!open ? (
           <p className="mt-8 border border-line bg-warning-soft px-4 py-3 text-sm text-warning">This role is no longer accepting applications.</p>
