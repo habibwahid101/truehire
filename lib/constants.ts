@@ -34,10 +34,13 @@ export const APPLICATION_STATUS_LABELS: Record<ApplicationStatusValue, string> =
 };
 
 export const JOB_STATUSES = ["DRAFT", "PUBLISHED", "CLOSED"] as const;
-export const JOB_STATUS_LABELS = { DRAFT: "Draft", PUBLISHED: "Published", CLOSED: "Closed" } as const;
+export type JobStatusValue = (typeof JOB_STATUSES)[number];
+export const JOB_STATUS_LABELS: Record<JobStatusValue, string> = { DRAFT: "Draft", PUBLISHED: "Published", CLOSED: "Closed" };
 export const WORKPLACE_TYPES = ["ONSITE", "REMOTE", "HYBRID"] as const;
-export const WORKPLACE_LABELS = { ONSITE: "On-site", REMOTE: "Remote", HYBRID: "Hybrid" } as const;
+export type WorkplaceTypeValue = (typeof WORKPLACE_TYPES)[number];
+export const WORKPLACE_LABELS: Record<WorkplaceTypeValue, string> = { ONSITE: "On-site", REMOTE: "Remote", HYBRID: "Hybrid" };
 export const EMPLOYMENT_TYPES = ["FULL_TIME", "PART_TIME", "CONTRACT", "INTERNSHIP", "TEMPORARY"] as const;
+export type EmploymentTypeValue = (typeof EMPLOYMENT_TYPES)[number];
 export const EMPLOYMENT_LABELS = {
   FULL_TIME: "Full-time",
   PART_TIME: "Part-time",
@@ -46,6 +49,7 @@ export const EMPLOYMENT_LABELS = {
   TEMPORARY: "Temporary",
 } as const;
 export const QUESTION_TYPES = ["SHORT_TEXT", "LONG_TEXT", "YES_NO", "SINGLE_CHOICE", "NUMERIC"] as const;
+export type QuestionTypeValue = (typeof QUESTION_TYPES)[number];
 export const QUESTION_TYPE_LABELS = {
   SHORT_TEXT: "Short text",
   LONG_TEXT: "Long text",
@@ -54,6 +58,7 @@ export const QUESTION_TYPE_LABELS = {
   NUMERIC: "Numeric",
 } as const;
 export const INTERVIEW_MODES = ["IN_PERSON", "PHONE", "GOOGLE_MEET", "ZOOM", "OTHER_ONLINE"] as const;
+export type InterviewModeValue = (typeof INTERVIEW_MODES)[number];
 export const INTERVIEW_MODE_LABELS = {
   IN_PERSON: "In-person",
   PHONE: "Phone",
@@ -62,6 +67,9 @@ export const INTERVIEW_MODE_LABELS = {
   OTHER_ONLINE: "Other online",
 } as const;
 export const INTERVIEW_STATUSES = ["SCHEDULED", "RESCHEDULED", "CANCELLED", "ATTENDED", "NO_SHOW"] as const;
+export type InterviewStatusValue = (typeof INTERVIEW_STATUSES)[number];
+export const COMPANY_STATUSES = ["ACTIVE", "INACTIVE"] as const;
+export type CompanyStatusValue = (typeof COMPANY_STATUSES)[number];
 export const INTERVIEW_STATUS_LABELS = {
   SCHEDULED: "Scheduled",
   RESCHEDULED: "Rescheduled",

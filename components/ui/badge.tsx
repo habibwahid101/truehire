@@ -1,7 +1,7 @@
 import { cn } from "@/lib/utils";
 import {
   APPLICATION_STATUS_LABELS, INTERVIEW_STATUS_LABELS, JOB_STATUS_LABELS,
-  type ApplicationStatusValue, type JobStatusValue,
+  type ApplicationStatusValue, type InterviewStatusValue, type JobStatusValue,
 } from "@/lib/constants";
 
 const tone: Record<string, string> = {
@@ -29,7 +29,7 @@ export function StatusBadge({ value }: { value: string }) {
   const label =
     APPLICATION_STATUS_LABELS[value as ApplicationStatusValue] ||
     JOB_STATUS_LABELS[value as JobStatusValue] ||
-    INTERVIEW_STATUS_LABELS[value as keyof typeof INTERVIEW_STATUS_LABELS] ||
+    INTERVIEW_STATUS_LABELS[value as InterviewStatusValue] ||
     value.replaceAll("_", " ").toLowerCase();
   return (
     <span className={cn("inline-flex items-center rounded-sm px-2 py-0.5 text-xs font-medium", tone[value] || "bg-[#eeeae3] text-muted")}>

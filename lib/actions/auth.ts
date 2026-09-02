@@ -6,7 +6,9 @@ import { rateLimit } from "@/lib/rate-limit";
 import { clearSessionCookie, createSessionToken, setSessionCookie } from "@/lib/session";
 import { loginSchema } from "@/lib/validation";
 
-export async function loginAction(_: unknown, formData: FormData) {
+export type LoginActionState = { error?: string } | null;
+
+export async function loginAction(_prev: LoginActionState, formData: FormData): Promise<LoginActionState> {
   const parsed = loginSchema.safeParse({
     email: formData.get("email"),
     password: formData.get("password"),
