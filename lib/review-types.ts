@@ -141,7 +141,7 @@ export type ReviewApplicationRecord = {
   employmentStatus: string;
   currentCompany: string | null;
   currentDesignation: string | null;
-  totalExperienceYrs: string | number;
+  totalExperienceYrs: number;
   relevantExperience: string | null;
   skills: string;
   currentSalary: number | null;
@@ -175,4 +175,58 @@ export type ReviewApplication = ReviewApplicationRecord & {
 
 export type ReviewInterviewHydrated = ReviewInterview & {
   application: ReviewApplication;
+};
+
+export type AdminCompanyItem = ReviewCompany;
+export type AdminJobItem = ReviewJob;
+export type AdminQuestion = ReviewQuestion;
+export type AdminApplicationDetail = ReviewApplication;
+export type AdminInterviewItem = ReviewInterviewHydrated;
+
+export type AdminJobListItem = {
+  id: string;
+  slug: string;
+  title: string;
+  status: JobStatusValue;
+  applicationDeadline: Date | null;
+  company: { id: string; name: string };
+  _count: { applications: number };
+};
+
+export type AdminApplicationListItem = {
+  id: string;
+  publicReference: string;
+  jobId: string;
+  candidateName: string;
+  email: string;
+  phone: string;
+  status: ApplicationStatusValue;
+  submittedAt: Date;
+  totalExperienceYrs: number;
+  expectedSalary: number | null;
+  job: {
+    id: string;
+    title: string;
+    companyId: string;
+    company: { id: string; name: string };
+  };
+};
+
+export type AdminDashboardData = {
+  activeJobs: number;
+  newApps: number;
+  reviewing: number;
+  shortlisted: number;
+  interviews: number;
+  selected: number;
+  upcoming: AdminInterviewItem[];
+  recent: AdminApplicationListItem[];
+};
+
+export type AdminPublicJob = ReviewJob;
+export type AdminPublicApplication = {
+  publicReference: string;
+  candidateName: string;
+  submittedAt: Date;
+  job: { title: string; company: { name: string } };
 };
