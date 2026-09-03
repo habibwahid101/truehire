@@ -3,23 +3,31 @@ import { INTERVIEW_MODE_LABELS, INTERVIEW_MODES } from "./constants";
 
 type Mail = { to: string; subject: string; html: string; text: string };
 
+function isProductionRuntime() {
+  return process.env.NODE_ENV === "production" || process.env.VERCEL_ENV === "production";
+}
+
 async function sendMail(mail: Mail) {
   const from = process.env.EMAIL_FROM || "TrueHire <hello@example.com>";
   const key = process.env.RESEND_API_KEY;
   if (!key) {
+    if (isProductionRuntime()) {
+      console.error("[email:error] RESEND_API_KEY is required in production");
+      return { ok: false as const, mocked: false };
+    }
     console.info("[email:console]", { from, to: mail.to, subject: mail.subject, text: mail.text });
-    return { ok: true, mocked: true };
+    return { ok: true as const, mocked: true };
   }
   try {
     const result = await new Resend(key).emails.send({ from, to: mail.to, subject: mail.subject, html: mail.html, text: mail.text });
     if (result.error) {
       console.error("[email:error]", result.error);
-      return { ok: false };
+      return { ok: false as const, mocked: false };
     }
-    return { ok: true };
+    return { ok: true as const, mocked: false };
   } catch (error) {
     console.error("[email:error]", error);
-    return { ok: false };
+    return { ok: false as const, mocked: false };
   }
 }
 

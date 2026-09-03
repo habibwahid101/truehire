@@ -6,10 +6,14 @@ import { ALLOWED_CV_EXT, ALLOWED_CV_MIME, MAX_CV_BYTES } from "./constants";
 import { fileExtension } from "./utils";
 
 function driver() {
-  return process.env.STORAGE_DRIVER === "s3" ? "s3" : "local";
+  if (process.env.STORAGE_DRIVER === "s3" || process.env.STORAGE_DRIVER === "supabase") return "s3";
+  return "local";
 }
 function localRoot() {
   return path.resolve(process.env.STORAGE_LOCAL_DIR || "./storage/private");
+}
+function bucketName() {
+  return process.env.S3_BUCKET || "candidate-documents";
 }
 function s3() {
   return new S3Client({
@@ -38,9 +42,17 @@ export function objectKey(kind: "cv" | "supporting" | "logo", originalName: stri
 }
 export async function putPrivateFile(key: string, body: Buffer, contentType: string) {
   if (driver() === "s3") {
-    const bucket = process.env.S3_BUCKET;
-    if (!bucket) throw new Error("S3_BUCKET is not configured.");
-    await s3().send(new PutObjectCommand({ Bucket: bucket, Key: key, Body: body, ContentType: contentType }));
+    const bucket = bucketName();
+    if (!process.env.S3_ACCESS_KEY_ID || !process.env.S3_SECRET_ACCESS_KEY) {
+      throw new Error("S3 credentials are not configured.");
+    }
+    await s3().send(new PutObjectCommand({
+      Bucket: bucket,
+      Key: key,
+      Body: body,
+      ContentType: contentType,
+      ACL: undefined,
+    }));
     return;
   }
   const full = path.join(localRoot(), key);
@@ -49,8 +61,7 @@ export async function putPrivateFile(key: string, body: Buffer, contentType: str
 }
 export async function getPrivateFile(key: string) {
   if (driver() === "s3") {
-    const bucket = process.env.S3_BUCKET;
-    if (!bucket) throw new Error("S3_BUCKET is not configured.");
+    const bucket = bucketName();
     try {
       const result = await s3().send(new GetObjectCommand({ Bucket: bucket, Key: key }));
       const bytes = await result.Body?.transformToByteArray();
