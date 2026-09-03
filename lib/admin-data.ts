@@ -1,3 +1,5 @@
+import type { Prisma } from "@prisma/client";
+import { APPLICATION_STATUSES, type ApplicationStatusValue } from "./constants";
 import { prisma } from "./db";
 import {
   applicationsHydrated,
@@ -24,6 +26,12 @@ import {
   mapAdminJobListItem,
   mapReviewApplicationToListItem,
 } from "./ui-map";
+
+function asApplicationStatus(value?: string): ApplicationStatusValue | undefined {
+  return APPLICATION_STATUSES.includes(value as ApplicationStatusValue)
+    ? (value as ApplicationStatusValue)
+    : undefined;
+}
 
 export async function adminDashboard(): Promise<AdminDashboardData> {
   const live = async (): Promise<AdminDashboardData> => {
@@ -120,13 +128,9 @@ export async function adminApplications(filters: {
   company?: string;
 }): Promise<[AdminApplicationListItem[], { id: string; title: string }[], { id: string; name: string }[]]> {
   const live = async (): Promise<[AdminApplicationListItem[], { id: string; title: string }[], { id: string; name: string }[]]> => {
-    const where: {
-      status?: string;
-      jobId?: string;
-      job?: { companyId: string };
-      OR?: Array<Record<string, { contains: string; mode: "insensitive" }>>;
-    } = {};
-    if (filters.status) where.status = filters.status;
+    const where: Prisma.ApplicationWhereInput = {};
+    const status = asApplicationStatus(filters.status);
+    if (status) where.status = status;
     if (filters.job) where.jobId = filters.job;
     if (filters.company) where.job = { companyId: filters.company };
     if (filters.q) {
