@@ -29,12 +29,11 @@ export async function listPublishedJobs(filters?: {
   employmentType?: string;
 }): Promise<AdminPublicJob[]> {
   const live = async (): Promise<AdminPublicJob[]> => {
+    const employmentType = asEmploymentType(filters?.employmentType);
     const jobs = await prisma.job.findMany({
       where: {
         status: "PUBLISHED",
-        ...(asEmploymentType(filters?.employmentType)
-          ? { employmentType: asEmploymentType(filters.employmentType) }
-          : {}),
+        ...(employmentType ? { employmentType } : {}),
         ...(filters?.location ? { location: { contains: filters.location, mode: "insensitive" } } : {}),
         ...(filters?.q
           ? {
