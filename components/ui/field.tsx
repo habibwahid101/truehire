@@ -5,21 +5,21 @@ export function Field({
   label, hint, error, htmlFor, children,
 }: { label: string; hint?: string; error?: string; htmlFor?: string; children: React.ReactNode }) {
   return (
-    <label className="block space-y-1.5" htmlFor={htmlFor}>
-      <span className="block text-sm font-medium text-ink">{label}</span>
+    <label className="block space-y-1" htmlFor={htmlFor}>
+      <span className="block text-[13.5px] font-medium text-ink">{label}</span>
       {children}
-      {hint && !error ? <span className="block text-sm text-muted">{hint}</span> : null}
-      {error ? <span className="block text-sm text-danger" role="alert">{error}</span> : null}
+      {hint && !error ? <span className="block text-[13px] text-muted">{hint}</span> : null}
+      {error ? <span className="block text-[13px] text-danger" role="alert">{error}</span> : null}
     </label>
   );
 }
 
-const control = "w-full rounded-md border border-line bg-surface px-3 py-2.5 text-ink placeholder:text-faint focus:border-brand";
+const control = "w-full min-h-11 rounded-md border border-line bg-surface px-3 py-2 text-[15px] text-ink placeholder:text-faint focus:border-brand";
 export function Input({ className, ...props }: InputHTMLAttributes<HTMLInputElement>) {
   return <input className={cn(control, className)} {...props} />;
 }
 export function Textarea({ className, ...props }: TextareaHTMLAttributes<HTMLTextAreaElement>) {
-  return <textarea className={cn(control, "min-h-28 resize-y", className)} {...props} />;
+  return <textarea className={cn(control, "min-h-24 resize-y", className)} {...props} />;
 }
 export function Select({ className, ...props }: SelectHTMLAttributes<HTMLSelectElement>) {
   return <select className={cn(control, className)} {...props} />;
