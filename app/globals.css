@@ -3,15 +3,15 @@
 @theme inline {
   --font-sans: var(--font-geist);
   --font-serif: var(--font-source);
-  --color-paper: #f3efe8;
-  --color-surface: #fffcf7;
-  --color-ink: #161513;
-  --color-muted: #6a655d;
-  --color-faint: #948e84;
-  --color-line: #ddd6cb;
-  --color-brand: #123c37;
-  --color-brand-hover: #0c2d29;
-  --color-brand-soft: #e6eeec;
+  --color-paper: #f7f7f7;
+  --color-surface: #ffffff;
+  --color-ink: #0a0a0a;
+  --color-muted: #666666;
+  --color-faint: #8a8a8a;
+  --color-line: #e4e4e4;
+  --color-brand: #3a83f6;
+  --color-brand-hover: #2563eb;
+  --color-brand-soft: #eaf2fe;
   --color-success: #1c6848;
   --color-success-soft: #e4f3eb;
   --color-warning: #7d5412;
@@ -20,6 +20,7 @@
   --color-danger-soft: #f6e5e3;
   --color-info: #1b4a70;
   --color-info-soft: #e5eef5;
+  --color-dark: #212121;
 }
 
 * { box-sizing: border-box; }

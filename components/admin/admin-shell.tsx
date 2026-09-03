@@ -18,7 +18,7 @@ export function AdminShell({ session, children }: { session: AdminSession; child
         <ReviewBanner />
         <div className="mx-auto flex h-14 w-[min(1200px,calc(100%-20px))] items-center justify-between">
           <div className="flex min-w-0 items-center gap-6">
-            <Link href="/admin" className="serif text-lg text-brand">TrueHire</Link>
+            <Link href="/admin" className="serif text-lg text-ink">TrueHire</Link>
             <nav className="hidden gap-4 text-sm text-muted md:flex">
               {links.map(([label, href]) => <Link key={href} href={href} className="hover:text-ink">{label}</Link>)}
             </nav>

@@ -6,7 +6,7 @@ export function SiteHeader({ compact = false }: { compact?: boolean }) {
     <header className="sticky top-0 z-30 border-b border-line bg-surface/94 backdrop-blur">
       <ReviewBanner />
       <div className="container-page flex h-12 items-center justify-between sm:h-14">
-        <Link href="/" className="serif text-[20px] tracking-tight text-brand sm:text-[22px]">TrueHire</Link>
+        <Link href="/" className="serif text-[20px] tracking-tight text-ink sm:text-[22px]">TrueHire</Link>
         <nav className="flex items-center gap-4 text-sm text-muted sm:gap-6">
           <Link href="/jobs" className="hover:text-ink">Open jobs</Link>
           {!compact ? <Link href="/contact" className="hidden hover:text-ink sm:inline">Contact</Link> : null}
