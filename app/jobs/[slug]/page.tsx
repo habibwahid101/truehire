@@ -20,12 +20,26 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   };
 }
 
+function splitLines(body: string) {
+  return body.split(/\n+/).map((line) => line.trim()).filter(Boolean);
+}
+
 function Section({ title, body }: { title: string; body?: string | null }) {
   if (!body) return null;
+  const lines = splitLines(body);
+  const listLike = lines.length > 1;
   return (
-    <section className="border-t border-line py-8">
-      <h2 className="serif text-2xl">{title}</h2>
-      <div className="prose-job mt-4 whitespace-pre-wrap text-[16.5px] text-ink/90">{body}</div>
+    <section className="job-section">
+      <h2 className="serif job-section-title">{title}</h2>
+      {listLike ? (
+        <ul className="job-list">
+          {lines.map((line) => (
+            <li key={line}>{line.replace(/^[-•]\s*/, "")}</li>
+          ))}
+        </ul>
+      ) : (
+        <p className="job-prose whitespace-pre-wrap">{body}</p>
+      )}
     </section>
   );
 }
@@ -57,27 +71,27 @@ export default async function JobDetailPage({ params }: Props) {
   return (
     <>
       <SiteHeader />
-      <main className="pb-28 sm:pb-16">
+      <main className="pb-[calc(5.25rem+env(safe-area-inset-bottom))] lg:pb-10">
         <div className="border-b border-line bg-surface">
-          <div className="container-page py-10 sm:py-14">
+          <div className="container-page py-6 sm:py-8 lg:py-10">
             <Link href="/jobs" className="text-sm text-muted hover:text-ink">← Open jobs</Link>
-            <p className="mt-6 text-sm text-muted">{job.company.name}</p>
-            <h1 className="serif mt-2 max-w-3xl text-4xl sm:text-5xl">{job.title}</h1>
-            <p className="mt-4 max-w-2xl text-lg text-muted">{job.summary}</p>
+            <p className="mt-4 text-sm text-muted">{job.company.name}</p>
+            <h1 className="serif page-title mt-1 max-w-3xl">{job.title}</h1>
+            <p className="mt-3 max-w-2xl text-[15.5px] leading-6 text-muted">{job.summary}</p>
             {!open && closedReason ? (
-              <p className="mt-6 border border-line bg-warning-soft px-4 py-3 text-sm text-warning">{closedReason}</p>
+              <p className="mt-4 border border-line bg-warning-soft px-4 py-3 text-sm text-warning">{closedReason}</p>
             ) : null}
           </div>
         </div>
-        <div className="container-page grid gap-12 py-10 lg:grid-cols-[1fr_280px]">
-          <article>
+        <div className="container-page grid gap-8 py-7 lg:grid-cols-[minmax(0,1fr)_16.5rem] lg:gap-12 lg:py-9">
+          <article className="min-w-0">
             <section>
-              <h2 className="serif text-2xl">Overview</h2>
-              <dl className="mt-4 grid gap-3 sm:grid-cols-2">
+              <h2 className="serif job-section-title">Overview</h2>
+              <dl className="meta-grid mt-4">
                 {facts.map(([label, value]) => (
-                  <div key={label} className="border-b border-line pb-3">
-                    <dt className="text-xs uppercase tracking-[0.14em] text-faint">{label}</dt>
-                    <dd className="mt-1 text-ink">{value}</dd>
+                  <div key={label} className={`meta-item ${label === "Experience" || label === "Deadline" ? "sm:col-span-2 lg:col-span-2" : ""}`}>
+                    <dt>{label}</dt>
+                    <dd>{value}</dd>
                   </div>
                 ))}
               </dl>
@@ -85,11 +99,11 @@ export default async function JobDetailPage({ params }: Props) {
             <Section title="Responsibilities" body={job.responsibilities} />
             <Section title="Role description" body={job.description} />
             {job.skills.length > 0 ? (
-              <section className="border-t border-line py-8">
-                <h2 className="serif text-2xl">Skills</h2>
-                <ul className="mt-4 flex flex-wrap gap-2">
+              <section className="job-section">
+                <h2 className="serif job-section-title">Skills</h2>
+                <ul className="mt-3 flex flex-wrap gap-1.5">
                   {job.skills.map((skill) => (
-                    <li key={skill} className="border border-line bg-surface px-3 py-1 text-sm">{skill}</li>
+                    <li key={skill} className="chip">{skill}</li>
                   ))}
                 </ul>
               </section>
@@ -101,9 +115,10 @@ export default async function JobDetailPage({ params }: Props) {
             <Section title="Terms and conditions" body={job.terms} />
           </article>
           <aside className="hidden lg:block">
-            <div className="sticky top-8 border border-line bg-surface p-5">
+            <div className="sticky top-20 border border-line bg-surface p-5">
               <p className="text-sm text-muted">{job.company.name}</p>
-              <p className="mt-1 font-medium">{job.title}</p>
+              <p className="mt-1 font-medium leading-snug">{job.title}</p>
+              <p className="mt-3 text-sm text-muted">{formatSalary(job.salaryMin, job.salaryMax, job.salaryDisplay, job.salaryNegotiable)}</p>
               {open ? (
                 <Link href={`/jobs/${job.slug}/apply`} className="mt-5 inline-flex h-11 w-full items-center justify-center rounded-md bg-brand text-sm font-medium text-white hover:bg-brand-hover">
                   Apply for this role
