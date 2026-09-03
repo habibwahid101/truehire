@@ -32,7 +32,7 @@ async function sendMail(mail: Mail) {
 }
 
 function wrap(title: string, body: string) {
-  return `<div style="background:#F6F3EE;padding:24px 12px;font-family:Georgia,serif;color:#1A1916;"><div style="max-width:560px;margin:0 auto;background:#FFFcf8;border:1px solid #E4DFD6;padding:28px 24px;"><p style="letter-spacing:.16em;font-size:12px;text-transform:uppercase;color:#0E3B36;">TrueHire</p><h1 style="font-size:22px;">${title}</h1>${body}</div></div>`;
+  return `<div style="background:#F7F7F7;padding:24px 12px;font-family:Georgia,serif;color:#0A0A0A;"><div style="max-width:560px;margin:0 auto;background:#FFFFFF;border:1px solid #E4E4E4;padding:28px 24px;"><p style="letter-spacing:.16em;font-size:12px;text-transform:uppercase;color:#3A83F6;">TrueHire</p><h1 style="font-size:22px;color:#0A0A0A;">${title}</h1>${body}</div></div>`;
 }
 function esc(value: string) {
   return value.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
