@@ -24,7 +24,10 @@ type FormState = {
   termsAccepted: boolean; accuracyConfirmed: boolean; consentAccepted: boolean;
 };
 
-const steps = ["Personal", "Career", "Job fit", "Documents", "Review"];
+const shortLabels = ["Personal", "Career", "Job fit", "Documents", "Review"];
+const fullLabels = ["Personal", "Education & Career", "Job Fit", "Documents", "Review & Submit"];
+const stepTitles = ["Personal information", "Education & Career", "Job Fit", "Documents", "Review & Submit"];
+
 const empty = (job: Props["job"]): FormState => ({
   candidateName: "", phone: "", email: "", currentLocation: "", permanentAddress: "",
   highestEducation: "", institution: "", subjectMajor: "", employmentStatus: "",
@@ -62,7 +65,6 @@ export function ApplicationWizard({ job }: Props) {
     if (index === 0) {
       if (form.candidateName.trim().length < 2) next.candidateName = "Enter your full name.";
       if (form.phone.trim().length < 8) next.phone = "Enter a valid mobile number.";
-      if (!/[^\s@]+@[^\s@]+\.[^\s@]+/.test(form.email) === false && !/^[\w.+-]+@[\w.-]+\.[A-Za-z]{2,}$/.test(form.email)) next.email = "Enter a valid email address.";
       if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) next.email = "Enter a valid email address.";
       if (form.currentLocation.trim().length < 2) next.currentLocation = "Enter your current location.";
     }
@@ -127,16 +129,34 @@ export function ApplicationWizard({ job }: Props) {
 
   return (
     <div>
-      <ol className="mb-8 flex gap-2 overflow-x-auto pb-1 text-xs uppercase tracking-[0.12em] text-faint">
-        {steps.map((label, index) => (
-          <li key={label} className={index === step ? "shrink-0 text-brand" : index < step ? "shrink-0 text-ink" : "shrink-0"}>
-            {String(index + 1).padStart(2, "0")} {label}
-          </li>
-        ))}
-      </ol>
+      <div className="mb-6">
+        <div className="md:hidden">
+          <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-brand">Step {step + 1} of 5</p>
+          <p className="mt-1 text-sm font-medium text-ink">{stepTitles[step]}</p>
+          <div
+            className="mt-3 h-1 overflow-hidden rounded-full bg-line"
+            role="progressbar"
+            aria-valuemin={1}
+            aria-valuemax={5}
+            aria-valuenow={step + 1}
+            aria-label={`Step ${step + 1} of 5, ${stepTitles[step]}`}
+          >
+            <div className="h-full bg-brand" style={{ width: `${((step + 1) / 5) * 100}%` }} />
+          </div>
+        </div>
+        <ol className="hidden grid-cols-5 gap-2 md:grid">
+          {shortLabels.map((label, index) => (
+            <li key={label} className={index === step ? "text-brand" : index < step ? "text-ink" : "text-faint"}>
+              <p className="text-[11px] font-semibold uppercase tracking-[0.12em]">{String(index + 1).padStart(2, "0")}</p>
+              <p className="mt-1 text-xs leading-snug lg:hidden">{label}</p>
+              <p className="mt-1 hidden text-xs leading-snug lg:block">{fullLabels[index]}</p>
+            </li>
+          ))}
+        </ol>
+      </div>
       {step === 0 && (
-        <div className="grid gap-4">
-          <Field label="Full name" error={errors.candidateName}><Input value={form.candidateName} onChange={(e) => set("candidateName", e.target.value)} autoComplete="name" /></Field>
+        <div className="grid gap-3.5 sm:grid-cols-2">
+          <div className="sm:col-span-2"><Field label="Full name" error={errors.candidateName}><Input value={form.candidateName} onChange={(e) => set("candidateName", e.target.value)} autoComplete="name" /></Field></div>
           <Field label="Mobile number" error={errors.phone}><Input value={form.phone} onChange={(e) => set("phone", e.target.value)} inputMode="tel" autoComplete="tel" /></Field>
           <Field label="Email address" error={errors.email}><Input value={form.email} onChange={(e) => set("email", e.target.value)} type="email" autoComplete="email" /></Field>
           <Field label="Current location" error={errors.currentLocation}><Input value={form.currentLocation} onChange={(e) => set("currentLocation", e.target.value)} /></Field>
@@ -144,7 +164,7 @@ export function ApplicationWizard({ job }: Props) {
         </div>
       )}
       {step === 1 && (
-        <div className="grid gap-4">
+        <div className="grid gap-3.5 sm:grid-cols-2">
           <Field label="Highest education" error={errors.highestEducation}>
             <Select value={form.highestEducation} onChange={(e) => set("highestEducation", e.target.value)}>
               <option value="">Select</option>
@@ -161,40 +181,40 @@ export function ApplicationWizard({ job }: Props) {
           </Field>
           <Field label="Current company"><Input value={form.currentCompany} onChange={(e) => set("currentCompany", e.target.value)} /></Field>
           <Field label="Current designation"><Input value={form.currentDesignation} onChange={(e) => set("currentDesignation", e.target.value)} /></Field>
-          <Field label="Total professional experience (years)" error={errors.totalExperienceYrs}>
+          <div className="sm:col-span-2"><Field label="Total professional experience (years)" error={errors.totalExperienceYrs}>
             <Input type="number" min="0" step="0.5" value={form.totalExperienceYrs} onChange={(e) => set("totalExperienceYrs", e.target.value)} />
-          </Field>
-          <Field label="Relevant experience"><Textarea value={form.relevantExperience} onChange={(e) => set("relevantExperience", e.target.value)} /></Field>
+          </Field></div>
+          <div className="sm:col-span-2"><Field label="Relevant experience"><Textarea value={form.relevantExperience} onChange={(e) => set("relevantExperience", e.target.value)} /></Field></div>
         </div>
       )}
       {step === 2 && (
-        <div className="grid gap-4">
-          <Field label="Key skills" error={errors.skills}><Input value={form.skills} onChange={(e) => set("skills", e.target.value)} /></Field>
-          <div className="grid gap-4 sm:grid-cols-2">
-            <Field label="Current salary (BDT, optional)"><Input type="number" min="0" value={form.currentSalary} onChange={(e) => set("currentSalary", e.target.value)} /></Field>
-            <Field label="Expected salary (BDT, optional)"><Input type="number" min="0" value={form.expectedSalary} onChange={(e) => set("expectedSalary", e.target.value)} /></Field>
-          </div>
+        <div className="grid gap-3.5 sm:grid-cols-2">
+          <div className="sm:col-span-2"><Field label="Key skills" error={errors.skills}><Input value={form.skills} onChange={(e) => set("skills", e.target.value)} /></Field></div>
+          <Field label="Current salary (BDT, optional)"><Input type="number" min="0" value={form.currentSalary} onChange={(e) => set("currentSalary", e.target.value)} /></Field>
+          <Field label="Expected salary (BDT, optional)"><Input type="number" min="0" value={form.expectedSalary} onChange={(e) => set("expectedSalary", e.target.value)} /></Field>
           <Field label="Notice period"><Input value={form.noticePeriod} onChange={(e) => set("noticePeriod", e.target.value)} /></Field>
           <Field label="Earliest joining date"><Input type="date" value={form.earliestJoinDate} onChange={(e) => set("earliestJoinDate", e.target.value)} /></Field>
-          <Field label="Why are you suitable for this position?" error={errors.suitability}><Textarea value={form.suitability} onChange={(e) => set("suitability", e.target.value)} /></Field>
+          <div className="sm:col-span-2"><Field label="Why are you suitable for this position?" error={errors.suitability}><Textarea value={form.suitability} onChange={(e) => set("suitability", e.target.value)} /></Field></div>
           {job.questions.map((question) => (
-            <Field key={question.id} label={question.question + (question.required ? "" : " (optional)")} error={errors[`q-${question.id}`]}>
-              {question.type === "LONG_TEXT" ? (
-                <Textarea value={form.answers[question.id] || ""} onChange={(e) => set("answers", { ...form.answers, [question.id]: e.target.value })} />
-              ) : question.type === "YES_NO" || question.type === "SINGLE_CHOICE" ? (
-                <Select value={form.answers[question.id] || ""} onChange={(e) => set("answers", { ...form.answers, [question.id]: e.target.value })}>
-                  <option value="">Select</option>
-                  {(question.type === "YES_NO" ? ["Yes", "No"] : question.options).map((option) => <option key={option}>{option}</option>)}
-                </Select>
-              ) : (
-                <Input type={question.type === "NUMERIC" ? "number" : "text"} value={form.answers[question.id] || ""} onChange={(e) => set("answers", { ...form.answers, [question.id]: e.target.value })} />
-              )}
-            </Field>
+            <div key={question.id} className="sm:col-span-2">
+              <Field label={question.question + (question.required ? "" : " (optional)")} error={errors[`q-${question.id}`]}>
+                {question.type === "LONG_TEXT" ? (
+                  <Textarea value={form.answers[question.id] || ""} onChange={(e) => set("answers", { ...form.answers, [question.id]: e.target.value })} />
+                ) : question.type === "YES_NO" || question.type === "SINGLE_CHOICE" ? (
+                  <Select value={form.answers[question.id] || ""} onChange={(e) => set("answers", { ...form.answers, [question.id]: e.target.value })}>
+                    <option value="">Select</option>
+                    {(question.type === "YES_NO" ? ["Yes", "No"] : question.options).map((option) => <option key={option}>{option}</option>)}
+                  </Select>
+                ) : (
+                  <Input type={question.type === "NUMERIC" ? "number" : "text"} value={form.answers[question.id] || ""} onChange={(e) => set("answers", { ...form.answers, [question.id]: e.target.value })} />
+                )}
+              </Field>
+            </div>
           ))}
         </div>
       )}
       {step === 3 && (
-        <div className="grid gap-4">
+        <div className="grid gap-3.5">
           <Field label="CV / resume" hint="PDF, DOC or DOCX. Maximum 8 MB." error={errors.cv}>
             <Input type="file" accept=".pdf,.doc,.docx,application/pdf" onChange={(e) => { const file = e.target.files?.[0]; if (file) void upload(file, "cv"); }} />
             {form.cvFileName ? <p className="text-sm text-success">Uploaded: {form.cvFileName}</p> : null}
@@ -213,18 +233,23 @@ export function ApplicationWizard({ job }: Props) {
         </div>
       )}
       {step === 4 && (
-        <div className="space-y-6">
-          <div className="border border-line bg-surface p-5 text-sm">
-            <h3 className="serif text-xl">Review</h3>
-            <p className="mt-1 text-muted">{job.title} · {job.companyName}</p>
-            <dl className="mt-4 grid gap-2">
+        <div className="space-y-5">
+          <div className="border border-line bg-surface p-4 text-sm sm:p-5">
+            <div className="flex items-start justify-between gap-3">
+              <div>
+                <h3 className="serif text-xl">Review</h3>
+                <p className="mt-1 text-muted">{job.title} · {job.companyName}</p>
+              </div>
+              <button type="button" className="text-sm text-brand hover:underline" onClick={() => setStep(0)}>Edit</button>
+            </div>
+            <dl className="mt-4 grid gap-2 sm:grid-cols-2">
               <div><span className="text-muted">Name.</span> {form.candidateName}</div>
               <div><span className="text-muted">Contact.</span> {form.email} · {form.phone}</div>
               <div><span className="text-muted">Location.</span> {form.currentLocation}</div>
               <div><span className="text-muted">Education.</span> {form.highestEducation} {form.institution}</div>
               <div><span className="text-muted">Experience.</span> {form.totalExperienceYrs} years · {form.employmentStatus}</div>
-              <div><span className="text-muted">Skills.</span> {form.skills}</div>
-              <div><span className="text-muted">CV.</span> {form.cvFileName}</div>
+              <div className="sm:col-span-2"><span className="text-muted">Skills.</span> {form.skills}</div>
+              <div className="sm:col-span-2"><span className="text-muted">CV.</span> {form.cvFileName}</div>
             </dl>
           </div>
           {job.terms ? <div className="max-h-40 overflow-auto whitespace-pre-wrap border border-line p-4 text-sm text-muted">{job.terms}</div> : null}
@@ -234,10 +259,12 @@ export function ApplicationWizard({ job }: Props) {
           {submitError ? <p className="text-sm text-danger">{submitError}</p> : null}
         </div>
       )}
-      <div className="mt-8 flex items-center justify-between gap-3">
-        <Button type="button" variant="secondary" onClick={() => setStep((s) => Math.max(0, s - 1))} disabled={step === 0 || busy}>Back</Button>
+      <div className={`mt-7 flex gap-3 ${step === 0 ? "justify-end" : "justify-between"}`}>
+        {step > 0 ? (
+          <Button type="button" variant="secondary" onClick={() => setStep((s) => Math.max(0, s - 1))} disabled={busy}>Back</Button>
+        ) : null}
         {step < 4 ? (
-          <Button type="button" onClick={() => { if (validateStep(step)) setStep((s) => s + 1); }}>Continue</Button>
+          <Button type="button" className={step === 0 ? "w-full sm:w-auto" : ""} onClick={() => { if (validateStep(step)) setStep((s) => s + 1); }}>Continue</Button>
         ) : (
           <Button type="button" onClick={() => void submit()} disabled={busy}>{busy ? "Submitting…" : "Submit application"}</Button>
         )}
