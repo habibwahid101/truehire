@@ -1,7 +1,9 @@
 import { EMPLOYMENT_TYPES, type EmploymentTypeValue } from "./constants";
 import { prisma } from "./db";
-import { fixtureJobs, jobsWithCompany } from "./fixtures";
+import { applicationsHydrated, fixtureJobs, jobsWithCompany } from "./fixtures";
 import { liveOrFixture } from "./review";
+import type { AdminPublicApplication, AdminPublicJob } from "./review-types";
+import { mapAdminJob, mapPublicApplication } from "./ui-map";
 import { isJobOpen } from "./utils";
 
 function asEmploymentType(value?: string): EmploymentTypeValue | undefined {
@@ -9,20 +11,24 @@ function asEmploymentType(value?: string): EmploymentTypeValue | undefined {
 }
 
 function matchFilters(
-  jobs: ReturnType<typeof jobsWithCompany>,
+  jobs: AdminPublicJob[],
   filters?: { q?: string; location?: string; employmentType?: string },
 ) {
   const q = filters?.q?.toLowerCase().trim();
   return jobs.filter((job) => {
     if (filters?.employmentType && job.employmentType !== filters.employmentType) return false;
     if (filters?.location && !job.location.toLowerCase().includes(filters.location.toLowerCase())) return false;
-    if (q && ![job.title, job.summary, job.company.name].some((v) => v.toLowerCase().includes(q))) return false;
+    if (q && ![job.title, job.summary, job.company.name].some((value) => value.toLowerCase().includes(q))) return false;
     return true;
   });
 }
 
-export async function listPublishedJobs(filters?: { q?: string; location?: string; employmentType?: string }) {
-  const live = async () => {
+export async function listPublishedJobs(filters?: {
+  q?: string;
+  location?: string;
+  employmentType?: string;
+}): Promise<AdminPublicJob[]> {
+  const live = async (): Promise<AdminPublicJob[]> => {
     const jobs = await prisma.job.findMany({
       where: {
         status: "PUBLISHED",
@@ -40,32 +46,43 @@ export async function listPublishedJobs(filters?: { q?: string; location?: strin
             }
           : {}),
       },
-      include: { company: true },
+      include: { company: true, questions: { orderBy: { sortOrder: "asc" } } },
       orderBy: [{ publishedAt: "desc" }, { createdAt: "desc" }],
     });
-    return jobs.filter((job) => isJobOpen(job));
+    return jobs.filter((job) => isJobOpen(job)).map((job) => mapAdminJob(job));
   };
-  const fixtures = matchFilters(jobsWithCompany().filter((job) => isJobOpen(job)), filters);
-  return liveOrFixture(live, fixtures);
+  return liveOrFixture(live, matchFilters(jobsWithCompany().filter((job) => isJobOpen(job)), filters));
 }
 
-export async function getPublishedJobBySlug(slug: string) {
-  const live = async () =>
-    prisma.job.findUnique({
+export async function getPublishedJobBySlug(slug: string): Promise<AdminPublicJob | null> {
+  const live = async (): Promise<AdminPublicJob | null> => {
+    const job = await prisma.job.findUnique({
       where: { slug },
       include: { company: true, questions: { orderBy: { sortOrder: "asc" } } },
     });
-  const fixture = fixtureJobs.find((job) => job.slug === slug) || null;
-  return liveOrFixture(live, fixture);
+    return job ? mapAdminJob(job) : null;
+  };
+  return liveOrFixture(live, fixtureJobs.find((job) => job.slug === slug) ?? null);
 }
 
-export async function getApplicationByReference(reference: string) {
-  const live = async () =>
-    prisma.application.findUnique({
+export async function getApplicationByReference(reference: string): Promise<AdminPublicApplication | null> {
+  const live = async (): Promise<AdminPublicApplication | null> => {
+    const row = await prisma.application.findUnique({
       where: { publicReference: reference },
       include: { job: { include: { company: true } } },
     });
-  const { applicationsHydrated } = await import("./fixtures");
-  const fixture = applicationsHydrated().find((a) => a.publicReference === reference) || null;
-  return liveOrFixture(live, fixture);
+    return row ? mapPublicApplication(row) : null;
+  };
+  const fixture = applicationsHydrated().find((app) => app.publicReference === reference);
+  return liveOrFixture(
+    live,
+    fixture
+      ? {
+          publicReference: fixture.publicReference,
+          candidateName: fixture.candidateName,
+          submittedAt: fixture.submittedAt,
+          job: { title: fixture.job.title, company: { name: fixture.job.company.name } },
+        }
+      : null,
+  );
 }
