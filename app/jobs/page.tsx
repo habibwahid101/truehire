@@ -10,7 +10,11 @@ export default async function JobsPage({
   searchParams,
 }: { searchParams: Promise<{ q?: string; location?: string; type?: string }> }) {
   const params = await searchParams;
-  const jobs = await listPublishedJobs({ q: params.q, location: params.location, employmentType: params.type });
+  const [allOpen, jobs] = await Promise.all([
+    listPublishedJobs(),
+    listPublishedJobs({ q: params.q, location: params.location, employmentType: params.type }),
+  ]);
+  const locations = [...new Set(allOpen.map((job) => job.location).filter(Boolean))].sort((a, b) => a.localeCompare(b));
   return (
     <>
       <SiteHeader />
@@ -19,7 +23,10 @@ export default async function JobsPage({
         <p className="mt-2 max-w-2xl text-sm text-muted sm:text-[15.5px]">Review the complete role before you apply. Closed and expired vacancies are not listed.</p>
         <form className="mt-5 grid gap-2.5 sm:grid-cols-2 lg:grid-cols-[1fr_1fr_1fr_auto]" method="get">
           <Input name="q" placeholder="Search title or company" defaultValue={params.q} aria-label="Keyword" />
-          <Input name="location" placeholder="Location" defaultValue={params.location} aria-label="Location" />
+          <Select name="location" defaultValue={params.location || ""} aria-label="Location">
+            <option value="">All locations</option>
+            {locations.map((location) => <option key={location} value={location}>{location}</option>)}
+          </Select>
           <Select name="type" defaultValue={params.type || ""} aria-label="Employment type">
             <option value="">All employment types</option>
             {EMPLOYMENT_TYPES.map((type) => <option key={type} value={type}>{EMPLOYMENT_LABELS[type]}</option>)}

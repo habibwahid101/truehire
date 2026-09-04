@@ -22,7 +22,7 @@ export function Textarea({ className, ...props }: TextareaHTMLAttributes<HTMLTex
   return <textarea className={cn(control, "min-h-24 resize-y", className)} {...props} />;
 }
 export function Select({ className, ...props }: SelectHTMLAttributes<HTMLSelectElement>) {
-  return <select className={cn(control, className)} {...props} />;
+  return <select className={cn(control, "pr-10", className)} {...props} />;
 }
 export function Checkbox({ label, error, ...props }: InputHTMLAttributes<HTMLInputElement> & { label: string; error?: string }) {
   return (

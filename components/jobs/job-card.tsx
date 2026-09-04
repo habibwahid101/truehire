@@ -23,18 +23,20 @@ export function JobCard({ job }: { job: JobCardJob }) {
     <article className="panel p-4 sm:p-5 lg:grid lg:grid-cols-[minmax(0,1fr)_13.5rem] lg:items-start lg:gap-8">
       <div className="min-w-0">
         <p className="text-sm text-muted">{job.company.name}</p>
-        <h3 className="serif mt-1 text-[1.35rem] leading-tight text-ink sm:text-[1.55rem]">
+        <h3 className="serif mt-1.5 text-[1.35rem] leading-tight text-ink sm:text-[1.55rem]">
           <Link href={`/jobs/${job.slug}`} className="hover:text-brand">{job.title}</Link>
         </h3>
-        <dl className="mt-2 flex flex-wrap gap-x-3 gap-y-1 text-[13px] text-muted">
+        <dl className="mt-3 flex flex-wrap gap-x-3 gap-y-1 text-[13px] text-muted">
           <div>{job.location}</div>
           <div>{WORKPLACE_LABELS[job.workplaceType]}</div>
           <div>{EMPLOYMENT_LABELS[job.employmentType]}</div>
-          {job.experienceRequirement ? <div>{job.experienceRequirement}</div> : null}
         </dl>
-        <p className="mt-2.5 max-w-3xl text-[15px] leading-6 text-ink/80">{job.summary}</p>
+        {job.experienceRequirement ? (
+          <p className="mt-1.5 text-[13px] text-muted">{job.experienceRequirement}</p>
+        ) : null}
+        <p className="mt-3 max-w-3xl text-[15px] leading-6 text-ink/80">{job.summary}</p>
       </div>
-      <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between lg:mt-0 lg:flex-col lg:items-stretch lg:justify-start">
+      <div className="mt-5 flex flex-col gap-3.5 sm:flex-row sm:items-center sm:justify-between lg:mt-0 lg:flex-col lg:items-stretch lg:justify-start">
         <p className="text-sm text-muted lg:text-right">
           {formatSalary(job.salaryMin, job.salaryMax, job.salaryDisplay, job.salaryNegotiable)}
           {job.applicationDeadline ? ` · Apply by ${formatDate(job.applicationDeadline)}` : ""}
