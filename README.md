@@ -38,4 +38,5 @@ Admin: `/admin/login`, `/admin`, `/admin/companies`, `/admin/jobs`, `/admin/appl
 
 ## Deployment checkpoint
 
-Frontend review build on `main`, including form-action typing fixes for Vercel.
+Approved Black / White / Electric Blue color system is on `main`.
+Production deploy trigger: promote current `main` to Vercel Production without switching `TRUEHIRE_DATA_SOURCE=live`.
