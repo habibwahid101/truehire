@@ -1,4 +1,4 @@
-import { EMPLOYMENT_TYPES, type EmploymentTypeValue } from "./constants";
+import { EMPLOYMENT_TYPES, WORKPLACE_TYPES, type EmploymentTypeValue, type WorkplaceTypeValue } from "./constants";
 import { prisma } from "./db";
 import { applicationsHydrated, fixtureJobs, jobsWithCompany } from "./fixtures";
 import { liveOrFixture } from "./review";
@@ -10,13 +10,19 @@ function asEmploymentType(value?: string): EmploymentTypeValue | undefined {
   return EMPLOYMENT_TYPES.includes(value as EmploymentTypeValue) ? (value as EmploymentTypeValue) : undefined;
 }
 
+function asWorkplaceType(value?: string): WorkplaceTypeValue | undefined {
+  return WORKPLACE_TYPES.includes(value as WorkplaceTypeValue) ? (value as WorkplaceTypeValue) : undefined;
+}
+
 function matchFilters(
   jobs: AdminPublicJob[],
-  filters?: { q?: string; location?: string; employmentType?: string },
+  filters?: { q?: string; location?: string; employmentType?: string; workplaceType?: string },
 ) {
   const q = filters?.q?.toLowerCase().trim();
+  const workplaceType = asWorkplaceType(filters?.workplaceType);
   return jobs.filter((job) => {
     if (filters?.employmentType && job.employmentType !== filters.employmentType) return false;
+    if (workplaceType && job.workplaceType !== workplaceType) return false;
     if (filters?.location && !job.location.toLowerCase().includes(filters.location.toLowerCase())) return false;
     if (q && ![job.title, job.summary, job.company.name].some((value) => value.toLowerCase().includes(q))) return false;
     return true;
@@ -27,13 +33,16 @@ export async function listPublishedJobs(filters?: {
   q?: string;
   location?: string;
   employmentType?: string;
+  workplaceType?: string;
 }): Promise<AdminPublicJob[]> {
   const live = async (): Promise<AdminPublicJob[]> => {
     const employmentType = asEmploymentType(filters?.employmentType);
+    const workplaceType = asWorkplaceType(filters?.workplaceType);
     const jobs = await prisma.job.findMany({
       where: {
         status: "PUBLISHED",
         ...(employmentType ? { employmentType } : {}),
+        ...(workplaceType ? { workplaceType } : {}),
         ...(filters?.location ? { location: { contains: filters.location, mode: "insensitive" } } : {}),
         ...(filters?.q
           ? {

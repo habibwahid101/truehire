@@ -1,6 +1,8 @@
 import Link from "next/link";
 import { SiteFooter, SiteHeader } from "@/components/site-header";
+import { HeroVisual } from "@/components/jobs/hero-visual";
 import { JobCard } from "@/components/jobs/job-card";
+import { QuickJobFilters } from "@/components/jobs/quick-filters";
 import { listPublishedJobs } from "@/lib/jobs";
 
 export default async function HomePage() {
@@ -10,31 +12,35 @@ export default async function HomePage() {
       <SiteHeader />
       <main>
         <section className="border-b border-line bg-surface">
-          <div className="container-page page-intro sm:py-16 lg:py-20">
-            <p className="kicker">Managed recruitment</p>
-            <h1 className="serif display-title mt-3 max-w-3xl">
-              Clear opportunities.
-              <br />
-              Structured applications.
-            </h1>
-            <p className="mt-4 max-w-xl text-[15.5px] leading-6 text-muted sm:text-base">
-              TrueHire presents complete role information so candidates can apply with confidence,
-              and recruiters can review every application with context.
-            </p>
-            <div className="mt-6">
-              <Link href="/jobs" className="inline-flex h-11 items-center rounded-md bg-brand px-5 text-sm font-medium text-white hover:bg-brand-hover">
-                View open jobs
-              </Link>
+          <div className="container-page page-intro grid items-center gap-8 sm:py-12 lg:grid-cols-[minmax(0,1fr)_minmax(16rem,22rem)] lg:gap-12 lg:py-16">
+            <div className="min-w-0">
+              <p className="kicker">Managed recruitment</p>
+              <h1 className="serif display-title mt-3 max-w-3xl">
+                Clear opportunities.
+                <br />
+                Structured applications.
+              </h1>
+              <p className="mt-4 max-w-xl text-[15.5px] leading-6 text-muted sm:text-base">
+                TrueHire presents complete role information so candidates can apply with confidence,
+                and recruiters can review every application with context.
+              </p>
+              <div className="mt-6">
+                <Link href="/jobs" className="inline-flex h-11 items-center rounded-md bg-brand px-5 text-sm font-medium text-white hover:bg-brand-hover">
+                  View open jobs
+                </Link>
+              </div>
             </div>
+            <HeroVisual />
           </div>
         </section>
-        <section className="container-page section-gap">
-          <div className="flex items-end justify-between gap-4">
-            <div>
+        <QuickJobFilters jobs={jobs} />
+        <section className="container-page section-gap pt-6 sm:pt-8">
+          <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between sm:gap-4">
+            <div className="min-w-0">
               <h2 className="serif section-title">Open opportunities</h2>
               <p className="mt-1.5 text-sm text-muted">A curated set of live roles. Not a marketplace.</p>
             </div>
-            <Link href="/jobs" className="text-sm text-brand hover:underline">All jobs</Link>
+            <Link href="/jobs" className="shrink-0 text-sm text-brand hover:underline">All jobs</Link>
           </div>
           <div className="mt-5 grid gap-3 sm:gap-4">
             {jobs.length === 0 ? (
