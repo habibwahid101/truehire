@@ -30,7 +30,11 @@ export function SiteNav({ compact = false }: { compact?: boolean }) {
   return (
     <nav className="flex items-center gap-4 sm:gap-5" aria-label="Primary">
       <NavLink href="/jobs" emphasis>Open jobs</NavLink>
-      {!compact ? <NavLink href="/contact">Contact</NavLink> : null}
+      {!compact ? (
+        <span className="hidden sm:inline-flex">
+          <NavLink href="/contact">Contact</NavLink>
+        </span>
+      ) : null}
     </nav>
   );
 }
